@@ -5,7 +5,7 @@ import Coverage from "../Pages/Coverage/Coverage";
 import Error from "../Pages/Error404/Error";
 import AboutUs from "../Pages/AboutUs/AboutUs";
 import Story from "../Pages/AboutUs/Story";
-import Mission from "../Pages/AboutUs/mission";
+import Mission from "../Pages/AboutUs/Mission";
 import Success from "../Pages/AboutUs/Success";
 import Others from "../Pages/AboutUs/Others";
 import Rider from "../Pages/Rider/Rider";
