@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import useRole from "../Hooks/useRole";
 import RoundLoader from "../Components/Spinner/RoundLoader";
+import { FaTasks } from "react-icons/fa";
 
 const DashboardLayout = () => {
   const { role, roleLoading } = useRole();
@@ -21,39 +22,63 @@ const DashboardLayout = () => {
   console.log(role);
   const DashboardLinks = (
     <>
-      {/* <li>
+      <li>
         <NavLink
-          to="/dashboard"
+          to="/dashboard/my-profile"
           className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-          data-tip=" MyParcels"
+          data-tip=" My Profile"
         >
           <FaUser className="my-1.5 inline-block size-4" />
           <span className="is-drawer-close:hidden"> My Profile</span>
         </NavLink>
-      </li> */}
+      </li>
 
-      {/* --- my-parcels -link --  */}
-      <li>
-        <NavLink
-          to="/dashboard/my-parcels"
-          className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-          data-tip=" My Parcels"
-        >
-          <MdProductionQuantityLimits className="my-1.5 inline-block size-4" />
-          <span className="is-drawer-close:hidden"> My Parcels</span>
-        </NavLink>
-      </li>
-      {/* ---Payment History --  */}
-      <li>
-        <NavLink
-          to="/dashboard/payment-history"
-          className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-          data-tip=" Payment History"
-        >
-          <MdHistoryEdu className="my-1.5 inline-block size-4" />
-          <span className="is-drawer-close:hidden">Payment History</span>
-        </NavLink>
-      </li>
+      {/* ===== user Links ===== */}
+      {role === "user" && (
+        <>
+          {/* --- my-parcels -link --  */}
+          <li>
+            <NavLink
+              to="/dashboard/my-parcels"
+              className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip=" My Parcels"
+            >
+              <MdProductionQuantityLimits className="my-1.5 inline-block size-4" />
+              <span className="is-drawer-close:hidden"> My Parcels</span>
+            </NavLink>
+          </li>
+          {/* ---Payment History --  */}
+          <li>
+            <NavLink
+              to="/dashboard/payment-history"
+              className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip=" Payment History"
+            >
+              <MdHistoryEdu className="my-1.5 inline-block size-4" />
+              <span className="is-drawer-close:hidden">Payment History</span>
+            </NavLink>
+          </li>
+        </>
+      )}
+
+      {/* === Rider Links === */}
+      {role === "rider" && (
+        <>
+          {/* ======= Assigned Deliveries ======= */}
+          <li>
+            <NavLink
+              to="/dashboard/assigned-deliveries"
+              className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip="Assigned Deliveries"
+            >
+              <FaTasks className="my-1.5 inline-block size-4" />
+              <span className="is-drawer-close:hidden">
+                Assigned Deliveries
+              </span>
+            </NavLink>
+          </li>
+        </>
+      )}
 
       {/*  Admin Links */}
       {role === "admin" && (

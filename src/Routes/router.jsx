@@ -29,6 +29,10 @@ import ApproveRiders from "../Pages/Dashboard/ApproveRiders/ApproveRiders";
 import UsersManagement from "../Pages/Dashboard/UsersManagement/UsersManagement";
 import AdminRoutes from "./AdminRoutes";
 import AsignRiders from "../Pages/Dashboard/asignRiders/asignRiders";
+import AssignedDeliveries from "../Pages/Dashboard/AssignedDeliveries/AssignedDeliveries";
+import RiderRoutes from "./RiderRoutes";
+import UserRoutes from "./UserRoutes";
+import MyProfile from "../Pages/Dashboard/MyProfile/MyProfile";
 
 export const router = createBrowserRouter([
   {
@@ -129,8 +133,16 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: "my-profile",
+        element: <MyProfile />,
+      },
+      {
         path: "my-parcels",
-        element: <MyParcels />,
+        element: (
+          <UserRoutes>
+            <MyParcels />
+          </UserRoutes>
+        ),
       },
       {
         path: "payment/:parcelId",
@@ -148,6 +160,16 @@ export const router = createBrowserRouter([
         path: "payment-history",
         element: <PaymenthHistory />,
       },
+      // ==== rider routes ====
+      {
+        path: "assigned-deliveries",
+        element: (
+          <RiderRoutes>
+            <AssignedDeliveries />
+          </RiderRoutes>
+        ),
+      },
+      // ===== admin routes =====
       {
         path: "approve-riders",
         // Component: ApproveRiders,
