@@ -41,31 +41,35 @@ const AsignRiders = () => {
   };
 
   // ==== handle asign ===
-  const handleAsignRider = (rider) => {
-    const riderAssignInfo = {
-      riderId: rider._id,
-      riderName: rider.riderName,
-      riderEmail: rider.riderEmail,
-      rideContact: rider.rideContact,
-      parcelId: selectedParcel._id,
-    };
-    // console.log(riderAssignInfo.parcelId);
-    axiosSecure
-      .patch(`/parcels/${selectedParcel._id}`, riderAssignInfo)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data.modifiedCount) {
-          riderModalRef.current.close();
-          parcelsRefetch();
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Your work has been saved",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
+  const handleAsignRider = async (rider) => {
+    try {
+      const riderAssignInfo = {
+        riderId: rider._id,
+        riderName: rider.riderName,
+        riderEmail: rider.riderEmail,
+        rideContact: rider.rideContact,
+        parcelId: selectedParcel._id,
+      };
+      const res = await axiosSecure.patch(`/parcels/${selectedParcel._id}`, riderAssignInfo);
+      if (res.data.modifiedCount) {
+        riderModalRef.current.close();
+        parcelsRefetch();
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Rider assigned successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      console.error("Assign rider error:", error);
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to assign rider.",
+        icon: "error",
       });
+    }
   };
   return (
     <div>

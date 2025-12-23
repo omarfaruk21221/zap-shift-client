@@ -14,15 +14,16 @@ const SignIn = () => {
     formState: { errors },
   } = useForm();
 
-  const handleSignIn = (data) => {
-    console.log("after sign in ", data);
-    signInUser(data.email, data.password)
-      .then((result) => {
-        console.log(result.user);
-        toast.success("Sign In Successfull");
-        navigate(location?.state || "/");
-      })
-      .then((err) => console.log(err));
+  const handleSignIn = async (data) => {
+    try {
+      const result = await signInUser(data.email, data.password);
+      console.log(result.user);
+      toast.success("Sign In Successful");
+      navigate(location?.state || "/");
+    } catch (err) {
+      console.error("Sign in error:", err);
+      toast.error(err.message || "An error occurred during sign in");
+    }
   };
 
   return (

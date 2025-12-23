@@ -20,47 +20,43 @@ const SignUp = () => {
   // console.log("after register", location);
 
   // ---- create user feature ----
-  const handleRegistation = (data) => {
-    // console.log("after reg", data.photo[0]);
-    const profileImg = data.photo[0];
+  const handleRegistation = async (data) => {
+    try {
+      const profileImg = data.photo[0];
 
-    registerUser(data.email, data.password)
-      .then(() => {
-        // console.log(result.user);
-        ////// uploade img input
-        const formData = new FormData();
-        formData.append("image", profileImg);
-        const imageUrl = `https://api.imgbb.com/1/upload?key=${
-          import.meta.env.VITE_image_host
-        }`;
-        axios.post(imageUrl, formData).then((res) => {
-          console.log("after ime up", res.data.data.display_url);
-          const userImg = res.data.data.display_url;
-          ///create user at the mongodb
-          const userInfo = {
-            displayName: data.name,
-            photoURL: userImg,
-            email: data.email,
-          };
-          axiosSecure.post("/users", userInfo).then((res) => {
-            console.log("user create in the database", res.data);
-          });
-          //// update profile to firebase
-          const updateProfile = {
-            displayName: data.name,
-            photoURL: userImg,
-          };
-          updateUserProfile(updateProfile)
-            .then(() => {
-              // console.log("user profile update done");
-              toast.success("User profile update done");
-            })
-            .then((error) => console.log(error));
-        });
-        toast.success("SignUp Successful");
-        navigate("/signin");
-      })
-      .then((error) => toast.error(error.message));
+      // 1. Create user in Firebase
+      await registerUser(data.email, data.password);
+
+      // 2. Upload image to ImgBB
+      const formData = new FormData();
+      formData.append("image", profileImg);
+      const imageUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host}`;
+
+      const imgRes = await axios.post(imageUrl, formData);
+      const userImg = imgRes.data.data.display_url;
+
+      // 3. Create user in MongoDB
+      const userInfo = {
+        displayName: data.name,
+        photoURL: userImg,
+        email: data.email,
+        role: 'user'
+      };
+      await axiosSecure.post("/users", userInfo);
+
+      // 4. Update Firebase profile
+      const updateProfile = {
+        displayName: data.name,
+        photoURL: userImg,
+      };
+      await updateUserProfile(updateProfile);
+
+      toast.success("SignUp Successful");
+      navigate("/signin");
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error(error.message || "An error occurred during registration");
+    }
   };
   return (
     <div>

@@ -12,7 +12,7 @@ const UsersManagement = () => {
     queryKey: ["users", searchText],
     queryFn: async () => {
       const res = await axiosSecure.get(`/users?searchText=${searchText}`);
-    //   console.log({ res });
+      //   console.log({ res });
       return res.data;
     },
   });
@@ -21,24 +21,32 @@ const UsersManagement = () => {
     const roleInfo = { role: "admin" };
     Swal.fire({
       title: "Add Admin",
-      text: `You wont to Add Admin ${user.displayName}`,
+      text: `Are you sure you want to make ${user.displayName} an Admin?`,
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Confirm Add Admin",
-    }).then((result) => {
+      confirmButtonText: "Confirm",
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosSecure.patch(`/users/${user._id}/role`, roleInfo).then((res) => {
-          console.log(res.data);
+        try {
+          const res = await axiosSecure.patch(`/users/${user._id}/role`, roleInfo);
           if (res.data.modifiedCount) {
             Swal.fire({
-              title: "Confirm!",
-              text: "Rider reject request has been deleted.",
+              title: "Success!",
+              text: `${user.displayName} is now an admin.`,
               icon: "success",
             });
             refetch();
           }
-        });
+        } catch (error) {
+          console.error("Make admin error:", error);
+          Swal.fire({
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to make admin.",
+            icon: "error",
+          });
+        }
       }
     });
   };
@@ -48,24 +56,32 @@ const UsersManagement = () => {
     const roleInfo = { role: "user" };
     Swal.fire({
       title: "Remove Admin",
-      text: `You wont to remove admin ${user.displayName}/role`,
+      text: `Are you sure you want to remove Admin role from ${user.displayName}?`,
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Confirm Remove",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosSecure.patch(`/users/${user._id}`, roleInfo).then((res) => {
-          console.log(res.data);
+        try {
+          const res = await axiosSecure.patch(`/users/${user._id}/role`, roleInfo);
           if (res.data.modifiedCount) {
             Swal.fire({
-              title: "Confirm!",
-              text: "Rider reject request has been deleted.",
+              title: "Success!",
+              text: `${user.displayName} is no longer an admin.`,
               icon: "success",
             });
             refetch();
           }
-        });
+        } catch (error) {
+          console.error("Remove admin error:", error);
+          Swal.fire({
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to remove admin.",
+            icon: "error",
+          });
+        }
       }
     });
   };

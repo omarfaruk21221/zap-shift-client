@@ -21,27 +21,34 @@ const MyParcels = () => {
 
   //   ----- btn features ---
   const handleParcelDelete = (id) => {
-    console.log(id);
     Swal.fire({
       title: "Delete Your Parcel",
-      text: "You wont to remove  your parcel ",
+      text: "You want to remove your parcel?",
+      icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Confram Delete",
-    }).then((result) => {
+      confirmButtonText: "Confirm Delete",
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosSecure.delete(`/parcels/${id}`).then((res) => {
-          console.log(res.data);
+        try {
+          const res = await axiosSecure.delete(`/parcels/${id}`);
           if (res.data.deletedCount) {
             Swal.fire({
-              title: "Confram!",
+              title: "Deleted!",
               text: "Your parcel request has been deleted.",
               icon: "success",
             });
             refetch();
           }
-        });
+        } catch (error) {
+          console.error("Delete error:", error);
+          Swal.fire({
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to delete parcel.",
+            icon: "error",
+          });
+        }
       }
     });
   };
@@ -49,19 +56,30 @@ const MyParcels = () => {
   // ---- Pay button handle---
 
   const handlePayment = async (parcel) => {
-    const paymentInfo = {
-      cost: parcel.cost,
-      parcelId: parcel._id,
-      parcelName: parcel.parcelName,
-      senderEmail: parcel.senderEmail,
-    };
-    // console.log(paymentInfo);
-    const res = await axiosSecure.post(
-      "/payment-checkout-session",
-      paymentInfo
-    );
-    console.log(res.data.url);
-    window.location.assign(res.data.url);
+    try {
+      const paymentInfo = {
+        cost: parcel.cost,
+        parcelId: parcel._id,
+        parcelName: parcel.parcelName,
+        senderEmail: parcel.senderEmail,
+      };
+      const res = await axiosSecure.post(
+        "/payment-checkout-session",
+        paymentInfo
+      );
+      if (res.data.url) {
+        window.location.assign(res.data.url);
+      } else {
+        throw new Error("Failed to get checkout URL");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to initiate payment.",
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -109,7 +127,7 @@ const MyParcels = () => {
                 </td>
                 <td>{parcel.trackingId}</td>
                 <td>
-                  <div className={`badge p-4 ${parcel.deliveryStatus==="pending-pickup"&& "bg-primary-content "}||${parcel.deliveryStatus==="complete"&& "bg-success "} `}>
+                  <div className={`badge p-4 ${parcel.deliveryStatus === "pending-pickup" && "bg-primary-content "}||${parcel.deliveryStatus === "complete" && "bg-success "} `}>
                     {parcel.deliveryStatus}
                   </div>
                 </td>

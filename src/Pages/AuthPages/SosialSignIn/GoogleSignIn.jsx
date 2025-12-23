@@ -11,25 +11,26 @@ const GoogleSignIn = () => {
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
 
-  const handleGoogleSignIn = () => {
-    googleSignIn()
-      .then((result) => {
-        // console.log(result.user);
-        toast.success("Sign In Successfully And Save User!!!");
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await googleSignIn();
+      const data = result.user;
 
-        ///create user at the mongodb
-        const data = result.user;
-        const userInfo = {
-          displayName: data.name,
-          photoURL: data.photoURL,
-          email: data.email,
-        };
-        axiosSecure.post("/users", userInfo).then((res) => {
-          console.log("user create in the database", res.data);
-          navigate(location.state || "/");
-        });
-      })
-      .then((error) => console.log(error));
+      const userInfo = {
+        displayName: data.displayName,
+        photoURL: data.photoURL,
+        email: data.email,
+        role: 'user'
+      };
+
+      await axiosSecure.post("/users", userInfo);
+
+      toast.success("Sign In Successful!");
+      navigate(location.state || "/");
+    } catch (error) {
+      console.error("Google sign in error:", error);
+      toast.error(error.message || "An error occurred during Google Sign In");
+    }
   };
   return (
     <button

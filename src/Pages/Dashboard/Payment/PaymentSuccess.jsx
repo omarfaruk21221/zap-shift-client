@@ -13,15 +13,18 @@ const PaymentSuccess = () => {
       axiosSecure
         .patch(`/payment-success?session_id=${sessionId}`)
         .then((res) => {
-          // console.log("after paymentInfo",res);
           setPaymentInfo({
             transactionalId: res.data.transactionalId,
             trackingId: res.data.trackingId,
           });
+        })
+        .catch((error) => {
+          console.error("Payment success confirmation error:", error);
+          // Optionally show an error message to the user
         });
     }
   }, [axiosSecure, sessionId]);
-// console.log(paymentInfo)
+  // console.log(paymentInfo)
   // ---- output --
   return (
     <div className="p-20 ">
